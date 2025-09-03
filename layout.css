@@ -1,0 +1,344 @@
+/* =============================================================================
+   BASE STYLES & RESET
+   ============================================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* =============================================================================
+   MAIN LAYOUT STYLES
+   ============================================================================= */
+.app-viewport {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.main-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+    overflow: hidden;
+}
+
+.mobile-container {
+
+    /* 4방향 마진 0으로 통일 */
+    margin: 0;
+    /* 하단 라운드만 남기고 1.5배(20px → 30px) 적용 */
+    border-radius: 0 0 30px 30px;
+    /* 그림자 제거 */
+    box-shadow: none;
+    /* 하단 외곽선 추가 */
+    border-bottom: 1px solid #e8e8e8;
+
+    /* 상/좌/우 마진 0, 하단은 기존값 유지 */width: 100%;
+    max-width: 375px;
+    height: calc(100vh - 140px);
+    background: #ffffff;overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 모바일에서 가득 차도록 */
+@media (max-width: 480px) {
+    .mobile-container {
+        /* 모바일 뷰포트 가득 채움 */
+        max-width: 100vw;
+    }
+}
+
+
+.task-container {flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}/* =============================================================================
+   APP TITLE STYLES
+   ============================================================================= */
+.app-title-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: center;
+    z-index: 50;
+}
+
+.app-title-wrapper {
+    width: 100%;
+    max-width: 375px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.app-title {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* =============================================================================
+   TASK CARD STYLES
+   ============================================================================= */
+.task-card {
+    background: #ffffff;
+    border: 2px solid #e8e8e8;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+    cursor: move;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.task-card:hover {
+    border-color: #d0d0d0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.task-card.completed {
+    background: #f8f9fa;
+    border-color: #28a745;
+    opacity: 0.7;
+}
+
+.task-card.completed .task-text {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.task-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.task-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #6c757d;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.task-checkbox.checked {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.task-text {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #2c3e50;
+    font-weight: 400;
+}
+
+.drag-handle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bbb;
+    font-size: 16px;
+    cursor: move;
+}
+
+/* =============================================================================
+   SORTABLE STATES
+   ============================================================================= */
+.sortable-ghost {
+    opacity: 0.6;
+    background: #f8f9fa;
+    border: 2px dashed #2c3e50;
+    transform: rotate(3deg);
+}
+
+.sortable-chosen {
+    transform: scale(1.02);
+    z-index: 1000;
+}
+
+.sortable-drag {
+    transform: rotate(5deg);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+}
+
+/* =============================================================================
+   FAB (Floating Action Button) CONTAINER & STYLES
+   ============================================================================= */
+.fab-container {
+    position: fixed;
+    bottom: 80px;
+    right: 30px;
+    z-index: 100;
+}
+
+.add-task-btn {
+    width: 56px;
+    height: 56px;
+    background: #2c3e50;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-task-btn:hover {
+    transform: scale(1.1);
+    background: #34495e;
+}
+
+/* =============================================================================
+   INPUT STYLES
+   ============================================================================= */
+.task-input {
+    position: fixed;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 20px;
+    border-top: 1px solid #e8e8e8;
+    display: none;
+    z-index: 200;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 입력창 활성화 시 배경 디밍 오버레이 */
+.dim-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 150; /* 콘텐츠 위, 입력창(200) 아래 */
+}
+.dim-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+.task-input.active {
+    display: block;
+}
+
+.task-input input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.task-input input:focus {
+    border-color: #2c3e50;
+}
+
+.input-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: #2c3e50;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #34495e;
+}
+
+.btn-secondary {
+    background: #e8e8e8;
+    color: #2c3e50;
+}
+
+.btn-secondary:hover {
+    background: #d0d0d0;
+}
+
+/* =============================================================================
+   EMPTY STATE STYLES
+   ============================================================================= */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+/* =============================================================================
+   RESPONSIVE STYLES
+   ============================================================================= */
+@media (max-width: 400px) {
+    .main-container {
+        padding: 0;
+    }
+    
+    .mobile-container {
+        border-radius: 10px;
+    }
+}

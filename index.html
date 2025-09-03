@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>할 일 체크 앱</title>
+    
+    <!-- External CDN Resources -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css" rel="stylesheet">
+    
+    <!-- External Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.27/vue.global.min.js"></script>
+    
+    <!-- Local Styles -->
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="layout.css">
+</head>
+<body>
+    <div id="app" class="app-viewport">
+        <!-- Main Container -->
+        <div class="main-container">
+            <div class="mobile-container">
+                <!-- Task Container -->
+                <div class="task-container">
+                    <!-- Empty State -->
+                    <div v-if="tasks.length === 0" class="empty-state">
+                        <i class="mdi mdi-clipboard-check-outline"></i>
+                        <p>할 일을 추가해보세요!</p>
+                    </div>
+
+                    <!-- Task List -->
+                    <div id="sortable-list">
+                        <div 
+                            v-for="(task, index) in tasks" 
+                            :key="task.id"
+                            class="task-card"
+                            :class="{ completed: task.completed }"
+                            :data-id="task.id"
+                        >
+                            <div class="task-content">
+                                <div 
+                                    class="task-checkbox"
+                                    :class="{ checked: task.completed }"
+                                    @click="toggleTask(task.id)"
+                                >
+                                    <i v-if="task.completed" class="mdi mdi-check"></i>
+                                </div>
+                                <div class="task-text">{{ task.text }}</div>
+                                <div class="drag-handle">
+                                    <i class="mdi mdi-drag-vertical"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAB Container -->
+        <div class="fab-container">
+            <button class="add-task-btn" @click="showInput">
+                <i class="mdi mdi-plus"></i>
+            </button>
+        </div>
+
+        <!-- 배경 디밍 오버레이 (입력창 열릴 때) -->
+        <div class="dim-overlay" :class="{ active: inputVisible }" @click="hideInput"></div>
+
+        <!-- Task Input -->
+        <div class="task-input" :class="{ active: inputVisible }">
+            <input 
+                v-model="newTaskText" 
+                type="text" 
+                placeholder="새로운 할 일을 입력하세요..."
+                @keyup.enter="addTask"
+                ref="taskInput"
+            />
+            <div class="input-actions">
+                <button class="btn btn-primary" @click="addTask">추가</button>
+                <button class="btn btn-secondary" @click="hideInput">취소</button>
+            </div>
+        </div>
+
+        <!-- App Title - Fixed Bottom -->
+        <div class="app-title-container">
+            <div class="app-title-wrapper">
+                <div class="app-title">
+                    할 일 체크리스트
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Local Scripts -->
+    <script src="app-core.js"></script>
+    <script src="app-utils.js"></script>
+    <script src="app-methods.js"></script>
+    <script src="app-main.js"></script>
+</body>
+</html>
