@@ -21,6 +21,15 @@ class SortableManager {
         
         /** @type {Sortable|null} SortableJS 인스턴스 */
         this.sortableInstance = null;
+        /** @type {HTMLElement|null} 직전 상단 밀림 카드 */
+        this.pushPrev = null;
+        /** @type {HTMLElement|null} 직전 하단 밀림 카드 */
+        this.pushNext = null;
+        /** @type {number} rAF 아이디 (0이면 미사용) */
+        this._raf = 0;
+        /** @type {{rel: HTMLElement, insertAfter: boolean}|null} 대기 중 업데이트 */
+        this._pending = null;
+
     }
 
     /**
@@ -38,8 +47,7 @@ class SortableManager {
                 chosenClass: 'sortable-chosen',
                 dragClass: 'sortable-drag',
                 handle: '.drag-handle',
-                onEnd: (evt) => this.handleSort(evt)
-            });
+                onEnd: (evt) => { if (this._raf) { cancelAnimationFrame(this._raf); this._raf = 0; this._pending = null; } this._clearPush(); this.handleSort(evt); }, onMove: (evt) => { const rel = evt.related; if (!rel || !rel.classList || !rel.classList.contains('task-card')) return true; this._schedulePushUpdate(rel, !!evt.willInsertAfter); return true; }});
         }
     }
 
@@ -70,13 +78,72 @@ class SortableManager {
             this.sortableInstance = null;
         }
     }
+
+    /**
+     * 밀림 효과 제거
+     * @private
+     */
+    _clearPush() {
+        if (this.pushPrev) { this.pushPrev.classList.remove('push-up', 'push-down'); this.pushPrev = null; }
+        if (this.pushNext) { this.pushNext.classList.remove('push-up', 'push-down'); this.pushNext = null; }
+    }
+
+    /**
+     * onMove에서 DOM 변경을 rAF로 배치(깜빡임/경합 방지)
+     * @param {HTMLElement} rel
+     * @param {boolean} insertAfter
+     * @private
+     */
+    _schedulePushUpdate(rel, insertAfter) {
+        this._pending = { rel, insertAfter };
+        if (this._raf) return;
+        this._raf = requestAnimationFrame(() => {
+            this._raf = 0;
+            const job = this._pending; this._pending = null;
+            if (!job) return;
+            this._doPushUpdate(job.rel, job.insertAfter);
+        });
+    }
+
+    /**
+     * 실제 밀림 대상 계산 (고스트/드래그 제외, 위/아래 각각 선택)
+     * @param {HTMLElement} rel
+     * @param {boolean} insertAfter
+     * @private
+     */
+    _doPushUpdate(rel, insertAfter) {
+        const isCard = (el) => el && el.classList && el.classList.contains('task-card');
+        const isIgnored = (el) => el && el.classList && (
+            el.classList.contains('sortable-chosen') ||
+            el.classList.contains('sortable-drag') ||
+            el.classList.contains('sortable-ghost')
+        );
+        const findPrevCard = (start) => { let n = start; while (n) { if (isCard(n) && !isIgnored(n)) return n; n = n.previousElementSibling; } return null; };
+        const findNextCard = (start) => { let n = start; while (n) { if (isCard(n) && !isIgnored(n)) return n; n = n.nextElementSibling; } return null; };
+        if (!rel) return;
+        const upperStart = insertAfter ? rel : (rel && rel.previousElementSibling);
+        const lowerStart = insertAfter ? (rel && rel.nextElementSibling) : rel;
+        const upper = findPrevCard(upperStart);
+        const lower = findNextCard(lowerStart);
+        if (this.pushPrev && this.pushPrev !== upper) { this.pushPrev.classList.remove('push-up', 'push-down'); this.pushPrev = null; }
+        if (this.pushNext && this.pushNext !== lower) { this.pushNext.classList.remove('push-up', 'push-down'); this.pushNext = null; }
+        if (upper) { upper.classList.add('push-up'); upper.classList.remove('push-down'); this.pushPrev = upper; }
+        if (lower) {
+            if (upper && lower === upper) { lower.classList.add('push-down'); }
+            else { lower.classList.add('push-down'); lower.classList.remove('push-up'); }
+            this.pushNext = lower;
+        }
+    }
+
 };
+
 
 /**
  * 할 일 목록의 CRUD 작업과 상태 관리를 담당하는 클래스
  * @class TaskManager
  * @description 할 일 추가, 수정, 삭제, 완료/미완료 토글 등의 핵심 기능을 관리합니다
  */
+
 class TaskManager {
     /**
      * TaskManager 생성자

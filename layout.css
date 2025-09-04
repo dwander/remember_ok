@@ -48,7 +48,8 @@ body {
     /* 상/좌/우 마진 0, 하단은 기존값 유지 */width: 100%;
     max-width: 375px;
     height: calc(100vh - 140px);
-    background: #ffffff;overflow: hidden;
+    background: #ffffff;
+	overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -65,7 +66,9 @@ body {
 .task-container {flex: 1;
     padding: 20px;
     overflow-y: auto;
-}/* =============================================================================
+}
+
+/* =============================================================================
    APP TITLE STYLES
    ============================================================================= */
 .app-title-container {
@@ -114,6 +117,13 @@ body {
     position: relative;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
+
+/* 드래그 인접 카드 밀림 효과 */
+/* 위쪽 카드 */
+#sortable-list .task-card:has(+ .sortable-ghost) { transform: translate3d(0, -6px, 0); }
+/* 아래쪽 카드 */
+#sortable-list .sortable-ghost + .task-card { transform: translate3d(0, 6px, 0); }
+
 
 .task-card:hover {
     border-color: #d0d0d0;
