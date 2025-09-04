@@ -200,6 +200,9 @@ body {
    FAB (Floating Action Button) CONTAINER & STYLES
    ============================================================================= */
 .fab-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     position: fixed;
     bottom: 80px;
     right: 30px;
@@ -221,6 +224,24 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+/* 새로고침 버튼 스타일 (add 버튼 바로 아래) */
+.refresh-btn {
+    width: 56px;
+    height: 56px;
+    background: #95a5a6;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.refresh-btn:hover { transform: scale(1.08); }
+
 
 .add-task-btn:hover {
     transform: scale(1.1);
