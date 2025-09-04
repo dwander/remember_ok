@@ -44,6 +44,11 @@
      */
     const app = createApp({
         setup() {
+            // 로컬스토리지 동기화: tasks 변경 시 저장
+            Vue.watch(taskManager.tasks, (val) => {
+                try { localStorage.setItem('tasks', JSON.stringify(val)); } catch (e) {}
+            }, { deep: true });
+
             /**
              * 강력 새로고침: 스토리지 초기화 + SW 초기화 플래그 + 캐시무효 URL 재진입
              * @returns {void}

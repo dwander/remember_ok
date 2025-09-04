@@ -85,7 +85,9 @@ class TaskManager {
      */
     constructor() {
         /** @type {Vue.Ref<Array>} 할 일 목록 반응형 참조 */
-        this.tasks = Vue.ref([...APP_CONFIG.DEFAULT_TASKS]);
+        /* 로컬스토리지에서 복원, 없으면 기본값 */
+        const __saved = (() => { try { return JSON.parse(localStorage.getItem('tasks')); } catch (e) { return null; } })();
+        this.tasks = Vue.ref(Array.isArray(__saved) ? __saved : [...APP_CONFIG.DEFAULT_TASKS]);
         
         /** @type {Vue.Ref<boolean>} 입력창 표시 상태 */
         this.inputVisible = Vue.ref(false);
